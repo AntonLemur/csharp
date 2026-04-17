@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <!-- <TargetFramework>netcoreapp2.0</TargetFramework> -->
+    <TargetFramework>net10.0</TargetFramework>
+    <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>    
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Основной провайдер для Firebird (замените версию на 10.x, когда выйдет финальная для .NET 10, или используйте последнюю доступную 9.x) -->
+    <PackageReference Include="FirebirdSql.EntityFrameworkCore.Firebird" Version="9.0.2" />
+    
+    <!-- Клиент базы данных -->
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.3.4" />
+    
+    <!-- Логирование (версия должна соответствовать TargetFramework) -->
+    <!-- <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" /> -->
+  </ItemGroup>
+
+</Project>
