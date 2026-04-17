@@ -1,0 +1,140 @@
+<h1>@ViewData["Title"]</h1>
+
+<style>
+    /* 1. Внешний блок без прокрутки */
+    .table-wrapper {
+        border: 1px solid #dee2e6;
+        display: flex;
+        flex-direction: column;
+        max-height: 600px;
+    }
+
+    /* 2. Шапка таблицы всегда сверху */
+    .table-header {
+        background-color: #f8f9fa;
+        flex: 0 0 auto;
+    }
+
+    /* 3. Контейнер только для строк с данными и прокруткой */
+    .table-body-scroll {
+        overflow-y: auto;
+        flex: 1 1 auto;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        table-layout: fixed; /* Важно, чтобы колонки шапки и тела совпадали */
+    }
+
+    .table th, .table td {
+        border-bottom: 1px solid #dee2e6;
+        border-right: 1px solid #dee2e6;
+        padding: 8px;
+        word-wrap: break-word;
+    }
+
+    /* Ширина колонок (задайте свои значения) */
+    .col-id { width: 60px; }
+    .col-name { width: auto; }
+    .col-photo { 
+            width: 200px; 
+            min-width: 200px; /* Не даст колонке сжиматься меньше этого размера */
+            text-align: center; 
+    }
+
+    .table th:last-child, .table td:last-child {
+        border-right: none;
+    }
+
+    /* Стиль для строки, на которую навели мышь (опционально) */
+    .table tbody tr:hover {
+        background-color: #f1f1f1;
+        cursor: pointer;
+    }
+    /* Стиль для выделенной строки */
+    .table tr.selected {
+        background-color: #d1ecf1 !important; /* Цвет выделения */
+        outline: 2px solid #007bff;        /* Синяя рамка (по желанию) */
+    }
+</style>
+
+<div class="table-wrapper">
+    <!-- Блок с шапкой (тут прокрутки нет) -->
+    <div class="table-header">
+        <table class="table" style="border-bottom: none;">
+            <thead>
+                <tr>
+                    <th class="col-id">ID</th>
+                    <th class="col-name">Фамилия</th>
+                    <th class="col-photo">Фото</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <!-- Блок с данными (ползунок будет только здесь) -->
+    <div class="table-body-scroll">
+        <table class="table">
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="col-id">@item.Id</td>
+                        <td class="col-name">@item.Name</td>
+                        <td class="col-photo">
+                            <!-- Обращаемся к вашему методу EmployeePhoto, который мы сделали ранее -->
+                            <img src="@Url.Action("EmployeePhoto", "Data", new { id = item.Id })" 
+                                width="60" height="60" style="object-fit: cover; border-radius: 50%;" 
+                                alt="" 
+                                @* Правило margin: 0 auto — это классика CSS для центрирования блочных элементов: оно заставляет браузер автоматически рассчитывать отступы слева и справа так, чтобы объект оказался ровно посередине доступного пространства. *@
+                                onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'width:60px; height:60px; border-radius:50%; background:#eee; display:flex; align-items:center; justify-content:center; font-size:10px; color:#999; text-align:center;  margin: 0 auto;\'>Нет фото</div>';" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+                // Ищем таблицу именно внутри блока с данными
+                const tableBody = document.querySelector(".table-body-scroll .table");
+                const scrollContainer = document.querySelector(".table-body-scroll");
+
+                // Функция для выделения строки
+                function selectRow(row) {
+                    if (!row) return;
+                    tableBody.querySelectorAll("tr").forEach(r => r.classList.remove("selected"));
+                    row.classList.add("selected");
+                    
+                    // Прокрутка, чтобы выделенная строка была видна
+                    row.scrollIntoView({ block: "nearest", behavior: "smooth" });
+                }                
+
+                tableBody.addEventListener("click", function(e) {
+                // Ищем строку tr
+                const row = e.target.closest("tr");
+
+                if (row) selectRow(row);
+            });
+
+            // Навигация клавишами
+            window.addEventListener("keydown", function(e) {
+                const selected = tableBody.querySelector(".selected");
+                if (!selected) return;
+
+                if (e.key === "ArrowDown") {
+                    e.preventDefault(); // чтобы не крутилась вся страница
+                    selectRow(selected.nextElementSibling);
+                } else if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    selectRow(selected.previousElementSibling);
+                }
+            });
+        });
+    </script>
+}
