@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:testdb.ViewModels"
+             x:Class="testdb.Views.SpecificationsView"
+             x:DataType="vm:SpecificationsViewModel">
+
+    <!-- Стили нужны здесь, если их нет в App.axaml -->
+    <UserControl.Styles>
+        <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Заголовок -->
+        <TextBlock Grid.Row="0" 
+                   Text="Спецификации изделий" 
+                   FontSize="20" 
+                   Margin="10" 
+                   FontWeight="Bold"/>
+
+        <!-- Таблица -->
+        <TreeDataGrid Grid.Row="1" 
+                      Source="{Binding Specifications}" 
+                      Margin="10"
+                      BorderBrush="Gray"
+                      BorderThickness="1"/>
+    </Grid>
+</UserControl>

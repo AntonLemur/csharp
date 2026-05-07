@@ -1,0 +1,70 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:testdb.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="testdb.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="testdb"
+        xmlns:views="clr-namespace:testdb.Views">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <!-- <Window.DataTemplates>
+        <DataTemplate DataType="{x:Type vm:EmployeesViewModel}">
+            <views:EmployeesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SpecificationsViewModel}">
+            <views:SpecificationsView />
+        </DataTemplate>
+    </Window.DataTemplates> -->
+
+    <!-- Оборачиваем всё в один общий контейнер -->
+    <DockPanel>
+        <!-- Меню слева -->
+        <StackPanel DockPanel.Dock="Left" Width="200" Background="#F0F0F0">
+            <!-- Можно оставить приветствие вверху меню -->
+            <!-- <TextBlock Text="{Binding Greeting}" Margin="10" HorizontalAlignment="Center"/> -->
+            
+            <Button Content="Сотрудники" 
+                    Command="{Binding ShowEmployeesCommand}" 
+                    HorizontalAlignment="Stretch" Margin="5"/>
+            
+            <Button Content="Спецификации" 
+                    Command="{Binding ShowSpecificationsCommand}" 
+                    HorizontalAlignment="Stretch" Margin="5"/>
+        </StackPanel>
+
+        <!-- Область контента (занимает всё оставшееся место) -->
+        <ContentControl Content="{Binding CurrentPage}" Padding="10">
+            <!-- Шаблон для пустого состояния (когда CurrentPage == null) -->
+            <ContentControl.Template>
+                <ControlTemplate>
+                    <Panel>
+                        <!-- На самом деле здесь был классический “подводный камень” Avalonia:
+                        внутри ControlTemplate обычный {Binding} не работает так, как ожидается, потому что:
+                        DataContext там уже другой
+                        и он не равен Content вашего ContentControl
+                        Поэтому:
+                        <ContentPresenter Content="{Binding}" />
+                        просто ничего не показывал.
+                        А вот:
+                        <ContentPresenter Content="{TemplateBinding Content}" />
+                        — это правильный способ, потому что вы явно говорите:
+                        👉 “возьми Content у самого ContentControl” -->
+                        <ContentPresenter Content="{TemplateBinding Content}" />
+                        <TextBlock Text="Выберите раздел в меню слева" 
+                                   IsVisible="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNull}}"
+                                   VerticalAlignment="Center" 
+                                   HorizontalAlignment="Center" 
+                                   Foreground="Gray"/>
+                    </Panel>
+                </ControlTemplate>
+            </ContentControl.Template>
+        </ContentControl>
+    </DockPanel>
+</Window>

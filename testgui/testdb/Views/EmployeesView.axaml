@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:testdb.ViewModels"
+             x:Class ="testdb.Views.EmployeesView"
+             x:DataType="vm:EmployeesViewModel">
+
+    <DockPanel Margin="10">
+        <!-- Кнопка вызывает команду LoadDataCommand из ViewModel -->
+        <!-- <Button DockPanel.Dock="Top" 
+                Content="Обновить" 
+                Command="{Binding LoadEmployeesFromDbCommand}" 
+                Margin="0,0,0,10"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"/> -->
+
+        <!-- Таблица берет данные из коллекции Employees -->
+        <DataGrid ItemsSource="{Binding Employees}" 
+                    AutoGenerateColumns="True" 
+                    IsReadOnly="True"
+                    GridLinesVisibility="All"
+                    BorderThickness="1" 
+                    BorderBrush="Gray">
+        </DataGrid>
+    </DockPanel>
+</UserControl>    
