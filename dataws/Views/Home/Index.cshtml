@@ -1,0 +1,39 @@
+<div class="text-center">
+    <h1>Система управления заказами</h1>
+
+    <p class="mt-4">
+        Добро пожаловать в систему.
+    </p>
+</div>
+
+<div class="row mt-5">
+
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h3>Заказы</h3>
+
+            <p>Управление заказами клиентов</p>
+
+            <a asp-controller="Orders"
+               asp-action="Index"
+               class="btn btn-primary">
+                Открыть
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h3>Клиенты</h3>
+
+            <p>Список клиентов</p>
+
+            <a asp-controller="Customers"
+               asp-action="Index"
+               class="btn btn-primary">
+                Открыть
+            </a>
+        </div>
+    </div>
+
+</div>

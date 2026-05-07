@@ -11,14 +11,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Основной провайдер для Firebird (замените версию на 10.x, когда выйдет финальная для .NET 10, или используйте последнюю доступную 9.x) -->
-    <PackageReference Include="FirebirdSql.EntityFrameworkCore.Firebird" Version="9.0.2" />
-    
+    <!-- <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.0" /> -->
+    <PackageReference Include="FirebirdSql.EntityFrameworkCore.Firebird" Version="12.0.0" />
     <!-- Клиент базы данных -->
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.3.4" />
-    
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <!-- Логирование (версия должна соответствовать TargetFramework) -->
     <!-- <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" /> -->
   </ItemGroup>
-
 </Project>
