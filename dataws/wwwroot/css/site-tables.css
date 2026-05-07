@@ -1,0 +1,96 @@
+    /*Таблица с прокруткой*/
+/* 1. Внешний блок без прокрутки */
+.table-wrapper {
+    border: 1px solid #dee2e6;
+    display: flex;
+    flex-direction: column;
+    max-height: 600px;
+}
+
+/* 2. Шапка таблицы всегда сверху */
+.table-header {
+    background-color: #f8f9fa;
+    flex: 0 0 auto;
+}
+
+/* 3. Контейнер только для строк с данными и прокруткой */
+.table-body-scroll {
+    overflow-y: auto;
+    flex: 1 1 auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed; /* Важно, чтобы колонки шапки и тела совпадали */
+}
+
+.table th, .table td {
+    border-bottom: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+    padding: 8px;
+    word-wrap: break-word;
+}
+
+/* Ширина колонок (задайте свои значения) */
+.col-id { width: 60px; }
+.col-name { width: auto; }
+.col-photo { 
+        width: 200px; 
+        min-width: 200px; /* Не даст колонке сжиматься меньше этого размера */
+        text-align: center; 
+}
+
+.table th:last-child, .table td:last-child {
+    border-right: none;
+}
+
+/* Стиль для строки, на которую навели мышь (опционально) */
+.table tbody tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+/* Стиль для выделенной строки */
+.table tr.selected {
+    background-color: #d1ecf1 !important; /* Цвет выделения */
+    outline: 2px solid #007bff;        /* Синяя рамка (по желанию) */
+}
+/*/////////////////////////*/
+/*/////////////////////////*/
+/*/////////////////////////*/
+/*Ещё таблица с прокруткой*/
+/* 1. Главный секрет: резервируем место под скроллбар заранее */
+.custom-table-wrapper {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    overflow: hidden; /* Чтобы скруглить углы, если нужно */
+}
+
+.table-header-only {
+    background-color: #f8f9fa;
+    /* Убираем нижнюю границу у таблицы в шапке, чтобы не двоилась */
+    border-bottom: 2px solid #dee2e6; 
+}
+
+.table-body-scroll {
+    height: 60vh; /* Высота только для строк данных */
+    overflow-y: scroll; /* Всегда показываем скролл */
+}
+
+/* Важно: фиксируем ширину колонок, чтобы шапка и тело совпадали */
+.table {
+    table-layout: fixed; 
+    width: 
+
+100%;
+}
+
+/* Настройка скроллбара, чтобы он не выделялся */
+.table-body-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+.table-body-scroll::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}

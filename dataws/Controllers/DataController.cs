@@ -8,6 +8,7 @@ using FirebirdSql.Data.FirebirdClient;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using System;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DataApi.Controllers
 {
@@ -38,11 +39,14 @@ namespace DataApi.Controllers
     public class DataController : Controller
     {
         private readonly DataContext _context;
+        private readonly IDataRepository _repo;
+
         private readonly IConfigurationRoot Configuration;
         
-        public DataController(DataContext context)
+        public DataController(DataContext context, IDataRepository repo)
         {
             _context = context;
+            _repo = repo;
 
             /*if (_context.DataItems.Count() == 0)
             {
@@ -58,29 +62,48 @@ namespace DataApi.Controllers
 
         // Этот метод вернет JSON (потому что возвращает IEnumerable)        
         [HttpGet]
-        public async Task<IEnumerable<DataItem>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
+            // try
+            // {
+            //     // var employeeList = _context.DataItems.FromSqlRaw("select Id, last_name Name from WTT_EMPLOYEES_ALL_S").ToList();
+
+            //     var employeeList = await _context.DataItems.FromSqlRaw("select Id, last_name Name from WTT_EMPLOYEES_ALL_S").ToListAsync();
+            //     return employeeList;
+            // }
+            // catch (System.Exception ex)
+            // {
+            //     System.IO.File.AppendAllText(Configuration["Log"], "\n" + 
+            //         System.DateTime.Now.ToString() + ex.Message);
+            //     return null;
+            // }
+
             try
             {
-                // var employeeList = _context.DataItems.FromSqlRaw("select Id, last_name Name from WTT_EMPLOYEES_ALL_S").ToList();
-
-                var employeeList = await _context.DataItems.FromSqlRaw("select Id, last_name Name from WTT_EMPLOYEES_ALL_S").ToListAsync();
-                return employeeList;
+                var data = await _repo.GetAll();
+                return Ok(data);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                System.IO.File.AppendAllText(Configuration["Log"], "\n" + 
-                    System.DateTime.Now.ToString() + ex.Message);
-                return null;
-            }
+                LogHelper.WriteLog(Configuration["Log"], ex.Message);
+                return StatusCode(500);
+            }            
         }
 
         // Этот метод вернет HTML-страницу (потому что возвращает View)
         [HttpGet("view")]
         public async Task<IActionResult> Index() 
         {
-            var employees = await GetAll();
-            return View(employees); 
+            try
+            {
+                var employees = await _repo.GetAll();
+                return View(employees); 
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLog(Configuration["Log"], ex.Message);
+                return StatusCode(500);
+            }            
         }        
 
         [HttpGet("{id}", Name = "GetData")]
@@ -343,18 +366,24 @@ namespace DataApi.Controllers
         //Курьерская программа
 
         [HttpGet("orderscourier")]
-        public async Task<IEnumerable<OrderCourier>> GetAllOrders()
+        public async Task<IActionResult> GetAllOrders()
         {
             try
             {
-                LogHelper.WriteLog(Configuration["Log"], @"SELECT O.ID, O.ORDER_DATE, 
-                    O.AMOUNT, O.STATUS, C.FIRSTNAME, C.LASTNAME, C.ADDRESS, C.EMAIL FROM ORDERS O
-                    JOIN CUSTOMERS C ON C.ID=O.CUSTOMER_ID");
+                var data = await _context.Orders
+                    .Include(o => o.Customer) // Подгружаем связанные данные клиента
+                    .Select(o => new {
+                        // Создаем объект "на лету" с нужными именами полей
+                        Id = o.Id,
+                        Order_Date = o.OrderDate,
+                        Amount = o.Amount,
+                        Status = o.Status,
+                        Customer = (o.Customer.FirstName + " " + o.Customer.LastName).Trim(),
+                        Address = o.Customer.Address
+                    })
+                    .ToListAsync();
 
-                var orderList = await _context.OrdersCourier.FromSqlRaw(@"SELECT O.ID, O.ORDER_DATE, 
-                    O.AMOUNT, O.STATUS, C.FIRSTNAME, C.LASTNAME, C.ADDRESS, C.EMAIL FROM ORDERS O
-                    JOIN CUSTOMERS C ON C.ID=O.CUSTOMER_ID").ToListAsync();
-                return orderList;
+                    return Ok(data); // Отправит чистый JSON в мобильное приложение
             }
             catch (System.Exception ex)
             {
@@ -368,27 +397,21 @@ namespace DataApi.Controllers
         {
             try
             {
-                // 1. Находим заказ в базе
-                var order = await _context.OrdersCourier.FindAsync(id);
-                
-                if (order == null)
+                // Выполняет UPDATE напрямую в базе за один запрос без предварительного SELECT
+                int affectedRows = await _context.Database
+                    .ExecuteSqlRawAsync("UPDATE ORDERS SET STATUS = {0} WHERE ID = {1}", newStatus, id);
+
+                if (affectedRows == 0)
                 {
                     return NotFound($"Заказ с ID {id} не найден");
                 }
-
-                // 2. Обновляем поле
-                order.Status = newStatus;
-
-                // 3. Сохраняем изменения
-                await _context.SaveChangesAsync();
 
                 return Ok(new { message = "Статус успешно обновлен" });
             }
             catch (Exception ex)
             {
-                // Логируем ошибку, как вы делали ранее
                 return StatusCode(500, "Ошибка при обновлении базы данных");
-            }
+            } 
         }
     }
 }

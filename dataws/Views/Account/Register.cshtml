@@ -1,0 +1,14 @@
+<h2>Регистрация</h2>
+
+<form method="post">
+    <input type="text" name="email" placeholder="Email" />
+    <br />
+    <input type="password" name="password" placeholder="Пароль" />
+    <br />
+    <button type="submit">Зарегистрироваться</button>
+</form>
+<div asp-validation-summary="All"></div>
+<p>
+    Уже есть аккаунт? 
+    <a asp-controller="Account" asp-action="Login">Войти</a>
+</p>
