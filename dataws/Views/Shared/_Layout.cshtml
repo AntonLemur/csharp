@@ -15,8 +15,13 @@
         <div class="container">
             <a class="navbar-brand" href="/">Система заказов</a>
             <div class="navbar-nav">
-                <a class="nav-link" asp-controller="Orders" asp-action="Orders">Заказы</a>
-                <a class="nav-link" asp-controller="Customers" asp-action="Customers">Клиенты</a>
+                <a class="nav-link" asp-controller="Products" asp-action="Index">Товары</a>
+                <a class="nav-link" asp-controller="Cart" asp-action="Index">Корзина</a>                                
+                @if (User.IsInRole("Admin"))
+                {
+                    <a class="nav-link" asp-controller="Orders" asp-action="Orders">Заказы</a>
+                    <a class="nav-link" asp-controller="Customers" asp-action="Customers">Клиенты</a>
+                }
                 <a class="nav-link" asp-controller="Profile" asp-action="Index">Личный кабинет</a>
             </div>
         </div>

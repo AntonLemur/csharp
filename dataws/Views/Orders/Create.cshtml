@@ -1,0 +1,28 @@
+@model CreateOrderViewModel
+
+<h2>Новый заказ</h2>
+
+<form asp-action="Create" method="post">
+
+    <div class="mb-3">
+        <label>Товар</label>
+
+        <select asp-for="ProductId"
+                asp-items="ViewBag.Products"
+                class="form-select">
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Количество</label>
+
+        <input asp-for="Quantity"
+               class="form-control" />
+    </div>
+
+    <button type="submit"
+            class="btn btn-primary">
+        Создать заказ
+    </button>
+
+</form>

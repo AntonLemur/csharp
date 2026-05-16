@@ -1,7 +1,36 @@
-@model ApplicationUser
+@model Customer
 
 <h2>Личный кабинет</h2>
 
-<p>Email: @Model.Email</p>
-<p>Имя: @Model.UserName</p>
-<p>KYC: @Model.KycStatus</p>
+<form asp-action="Index" method="post">
+
+    <div class="mb-3">
+        <label>Имя</label>
+        <input asp-for="FirstName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Фамилия</label>
+        <input asp-for="LastName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Отчество</label>
+        <input asp-for="MiddleName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Адрес</label>
+        <input asp-for="Address" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Email</label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+
+    <button type="submit"
+            class="btn btn-primary">
+        Сохранить
+    </button>
+</form>

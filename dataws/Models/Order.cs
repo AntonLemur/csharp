@@ -29,5 +29,5 @@ public class Order
     [ForeignKey("CustomerId")]
     public virtual Customer Customer { get; set; }
 
-    public ICollection<OrderItem> Items { get; set; }    
+    public ICollection<OrderItem> Items { get; set; }
 }

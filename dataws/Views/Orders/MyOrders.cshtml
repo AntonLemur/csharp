@@ -1,0 +1,65 @@
+@model IEnumerable<DataApi.Models.Order>
+
+<h2>Мои заказы</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        У вас пока нет заказов.
+    </div>
+}
+else
+{
+    <div class="custom-table-wrapper">
+        <!-- Блок 1: Только шапка -->
+        <div class="table-header-only">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Дата</th>
+                        <th>Сумма</th>
+                        <th>Статус</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+        <!-- Блок 2: Только данные с прокруткой -->
+        <div class="table-body-scroll">
+            <table class="table table-hover mb-0">
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td>@order.Id</td>
+
+                            <td>
+                                @(order.OrderDate?.ToString("dd.MM.yyyy HH:mm"))
+                            </td>
+
+                            <td>
+                                @order.Amount
+                            </td>
+
+                            <td>
+                                @{
+                                    var statusText = order.Status switch
+                                    {
+                                        0 => "Новый",
+                                        1 => "В обработке",
+                                        2 => "Завершён",
+                                        3 => "Отменён",
+                                        _ => "Неизвестно"
+                                    };
+                                }
+
+                                @statusText
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DataApi.Models
 {
-    public class DataContext :  IdentityDbContext<ApplicationUser> //DbContext 
+    public class DataContext : IdentityDbContext<ApplicationUser, IdentityRole, string> //DbContext 
     {
         public DataContext(DbContextOptions<DataContext> options)
             : base(options)

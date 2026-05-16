@@ -21,10 +21,4 @@ public class ApplicationUser : IdentityUser
     // KYC
     public string KycStatus { get; set; } // Pending / Approved / Rejected
     public string PassportFilePath { get; set; }
-
-    // Навигация
-    public ICollection<Order> Orders { get; set; }
-    public ICollection<Booking> Bookings { get; set; }
-
-    
 }
