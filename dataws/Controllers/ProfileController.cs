@@ -4,6 +4,7 @@ using DataApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 public class ProfileController : Controller
 {
@@ -17,6 +18,7 @@ public class ProfileController : Controller
     }
 
     [Authorize] //пускает только залогиненных
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         // 1. Получаем текущего пользователя
@@ -24,9 +26,44 @@ public class ProfileController : Controller
         var user = await _userManager.GetUserAsync(User);
 
         // 2. Получаем Customer
-        // var customer = _context.Customers
-        //     .FirstOrDefault(c => c.UserId == user.Id);
+        var customer = _context.Customers
+            .FirstOrDefault(c => c.UserId == user.Id);
 
-        return View(user);//customer);
+        // Чтобы кабинет открывался даже у пользователей,
+        // созданных до появления таблицы Customer.
+        if (customer == null)
+        {
+            customer = new Customer
+            {
+                UserId = user.Id,
+                Email = user.Email
+            };
+
+            _context.Customers.Add(customer);
+
+            await _context.SaveChangesAsync();
+        }
+                    
+        return View(customer);
+    }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> Index(Customer model)
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        var customer = await _context.Customers
+            .FirstOrDefaultAsync(c => c.UserId == user.Id);
+
+        customer.FirstName = model.FirstName;
+        customer.LastName = model.LastName;
+        customer.MiddleName = model.MiddleName;
+        customer.Address = model.Address;
+        customer.Email = model.Email;
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Index");
     }
 }

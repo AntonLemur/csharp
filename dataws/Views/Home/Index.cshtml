@@ -15,25 +15,27 @@
             <p>Управление заказами клиентов</p>
 
             <a asp-controller="Orders"
-               asp-action="Index"
+               asp-action="MyOrders"
                class="btn btn-primary">
                 Открыть
             </a>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card p-3">
-            <h3>Клиенты</h3>
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h3>Клиенты</h3>
 
-            <p>Список клиентов</p>
+                <p>Список клиентов</p>
 
-            <a asp-controller="Customers"
-               asp-action="Index"
-               class="btn btn-primary">
-                Открыть
-            </a>
+                <a asp-controller="Customers"
+                asp-action="Index"
+                class="btn btn-primary">
+                    Открыть
+                </a>
+            </div>
         </div>
-    </div>
-
+    }
 </div>

@@ -28,7 +28,8 @@ namespace dataws
                 .AddEntityFrameworkStores<DataContext>()
                 .AddDefaultTokenProviders();
             services.AddMvc(options => options.EnableEndpointRouting = false); 
-            services.AddScoped<IDataRepository, DataRepository>();           
+            services.AddScoped<IDataRepository, DataRepository>();
+            services.AddSession();
         }
 
         // Здесь тоже меняем IHostingEnvironment на IWebHostEnvironment
@@ -45,6 +46,37 @@ namespace dataws
 
             app.UseAuthentication();   // 👈 обязательно
             app.UseAuthorization();    // 👈 обязательно
+
+            app.UseSession();
+
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var roleManager =
+                    scope.ServiceProvider
+                        .GetRequiredService<RoleManager<IdentityRole>>();
+
+                if (!roleManager.RoleExistsAsync("Admin").Result)
+                {
+                    roleManager.CreateAsync(
+                        new IdentityRole("Admin")).Wait();
+                }
+
+                var userManager =
+                    scope.ServiceProvider
+                        .GetRequiredService<UserManager<ApplicationUser>>();
+
+                var user = userManager
+                    .FindByNameAsync("qwerty")
+                    .Result;
+
+                if (user != null &&
+                    !userManager.IsInRoleAsync(user, "Admin").Result)
+                {
+                    userManager
+                        .AddToRoleAsync(user, "Admin")
+                        .Wait();
+                }
+            }
             
             app.UseEndpoints(endpoints =>
             {

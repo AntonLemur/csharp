@@ -1,0 +1,86 @@
+@model IEnumerable<Product>
+
+@{
+    var cart = Context.Session
+        .GetObject<List<CartItem>>("Cart")
+        ?? new List<CartItem>();
+}
+
+<h2>Товары</h2>
+
+@if (User.IsInRole("Admin"))
+{
+    <a asp-action="Create"
+       class="btn btn-success mb-3">
+        Добавить товар
+    </a>
+}
+
+<div class="custom-table-wrapper">
+    <!-- Блок 1: Только шапка -->
+    <div class="table-header-only">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Наименование</th>
+                    <th>Цена</th>
+                    @if (!User.IsInRole("Admin"))
+                    {
+                        <th>Кол-во</th>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <!-- Блок 2: Только данные с прокруткой -->
+    <div class="table-body-scroll">
+        <table class="table table-hover mb-0">
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var quantity = cart
+                        .FirstOrDefault(x => x.ProductId == item.Id)
+                        ?.Quantity ?? 0;
+
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Name</td>
+                        <td>@item.Price</td>
+                        @if (!User.IsInRole("Admin"))
+                        {
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+
+                                    <form asp-action="ChangeQuantity" method="post">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="plus" value="false" />
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-danger">
+                                            -
+                                        </button>
+                                    </form>
+
+                                    <span>@quantity</span>
+
+                                    <form asp-action="ChangeQuantity" method="post">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="plus" value="true" />
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-primary">
+                                            +
+                                        </button>
+                                    </form>
+
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

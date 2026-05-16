@@ -1,0 +1,58 @@
+@model List<CartItem>
+
+<h2>Корзина</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Корзина пуста
+    </div>
+}
+else
+{
+    <div class="custom-table-wrapper">
+        <!-- Блок 1: Только шапка -->
+        <div class="table-header-only">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Цена</th>
+                        <th>Количество</th>
+                        <th>Сумма</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+        <!-- Блок 2: Только данные с прокруткой -->
+        <div class="table-body-scroll">
+            <table class="table table-hover mb-0">
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.ProductName</td>
+
+                            <td>@item.Price</td>
+
+                            <td>@item.Quantity</td>
+
+                            <td>@(item.Price * item.Quantity)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <h4>
+        Итого:
+        @Model.Sum(x => x.Price * x.Quantity)
+    </h4>
+
+    <a asp-action="Checkout"
+       class="btn btn-success">
+        Оформить заказ
+    </a>
+}
