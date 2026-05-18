@@ -14,6 +14,9 @@ public class Customer
     public long Id { get; set; }
     [Column("EMAIL")]
     public string Email { get; set; }     
+    [Required]
+    [Column("PHONE")]
+    public string Phone { get; set; }     
     [Column("ADDRESS")]
     public string Address { get; set; }
     [Column("FIRSTNAME")]
@@ -23,6 +26,6 @@ public class Customer
     [Column("LASTNAME")]
     public string LastName { get; set; }
     [Column("USERID")]
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
     public ApplicationUser User { get; set; }
 }

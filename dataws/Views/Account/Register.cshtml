@@ -1,14 +1,39 @@
+@model RegisterViewModel
+
 <h2>Регистрация</h2>
 
 <form method="post">
-    <input type="text" name="email" placeholder="Email" />
+    <input asp-for="Email" placeholder="Email" />
+    <span asp-validation-for="Email"></span>    
     <br />
-    <input type="password" name="password" placeholder="Пароль" />
+    <input asp-for="Phone" placeholder="Телефон" />
+    <span asp-validation-for="Phone"></span>
+    <br />
+    <input asp-for="Password" type="password" placeholder="Пароль" />
+    <span asp-validation-for="Password"></span>    
     <br />
     <button type="submit">Зарегистрироваться</button>
 </form>
-<div asp-validation-summary="All"></div>
+@* показывает ОБЩИЙ список ошибок. *@
+<div asp-validation-summary="All"></div> 
 <p>
     Уже есть аккаунт? 
     <a asp-controller="Account" asp-action="Login">Войти</a>
 </p>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://unpkg.com/inputmask@5.0.8/dist/inputmask.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            var phoneInput =
+                document.getElementById("Phone");
+
+            var im = new Inputmask(
+                "+7 (999) 999-99-99");
+
+            im.mask(phoneInput);
+        });
+    </script>
+}

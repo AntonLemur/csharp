@@ -55,27 +55,28 @@ namespace dataws
                     scope.ServiceProvider
                         .GetRequiredService<RoleManager<IdentityRole>>();
 
-                if (!roleManager.RoleExistsAsync("Admin").Result)
+                string[] roles =
                 {
-                    roleManager.CreateAsync(
-                        new IdentityRole("Admin")).Wait();
-                }
+                    "Admin",
+                    "Manager"
+                };
+            
+                foreach(var role in roles)
+                    if (!roleManager.RoleExistsAsync(role)
+                            .GetAwaiter()
+                            .GetResult())
+                        roleManager.CreateAsync(
+                            new IdentityRole(role))
+                            .GetAwaiter()
+                            .GetResult();
 
                 var userManager =
                     scope.ServiceProvider
                         .GetRequiredService<UserManager<ApplicationUser>>();
 
-                var user = userManager
-                    .FindByNameAsync("qwerty")
-                    .Result;
+                AddRoleToUser(userManager, "qwerty", "Admin");
 
-                if (user != null &&
-                    !userManager.IsInRoleAsync(user, "Admin").Result)
-                {
-                    userManager
-                        .AddToRoleAsync(user, "Admin")
-                        .Wait();
-                }
+                AddRoleToUser(userManager, "sobaka@mail.ru", "Manager");
             }
             
             app.UseEndpoints(endpoints =>
@@ -91,6 +92,24 @@ namespace dataws
             // Если вы используете app.UseRouting() и app.UseEndpoints(), 
             // то старый метод UseMvc() больше не нужен (и может вызывать конфликты в .NET Core 3.0+).
             // app.UseMvc();
+        }
+
+        void AddRoleToUser(UserManager<ApplicationUser> userManager, string userName, string roleName)
+        {
+            var user =
+                userManager.FindByNameAsync(userName)
+                    .GetAwaiter()
+                    .GetResult();
+
+            if (user != null &&
+                !userManager.IsInRoleAsync(user, roleName)
+                    .GetAwaiter()
+                    .GetResult())
+            {
+                userManager.AddToRoleAsync(user, roleName)
+                    .GetAwaiter()
+                    .GetResult();
+            }
         }
     }
 }

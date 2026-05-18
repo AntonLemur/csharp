@@ -1,7 +1,9 @@
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DataApi.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 public class AccountController : Controller
 {
@@ -23,8 +25,10 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Register(string email, string password)
+    public async Task<IActionResult> Register(RegisterViewModel model)
     {
+        if (!ModelState.IsValid)
+            return View(model);
         // Внутри IdentityUser уже есть
         // public virtual string Id { get; set; }
         // public virtual string UserName { get; set; }
@@ -44,22 +48,34 @@ public class AccountController : Controller
         // а расширяете готовую систему.
         var user = new ApplicationUser
         {
-            UserName = email,
-            Email = email,
+            UserName = model.Email,
+            Email = model.Email,
             KycStatus = "Pending"
         };
 
-        var result = await _userManager.CreateAsync(user, password);
+        var result = await _userManager.CreateAsync(user, model.Password);
 
         if (result.Succeeded)
         {
-            var customer = new Customer
-            {
-                Email = email,
-                UserId = user.Id
-            };
+            string phone = Regex.Replace(model.Phone, @"\D", "");
 
-            _context.Customers.Add(customer);
+            var customer = await _context.Customers
+                .FirstOrDefaultAsync(c =>
+                    c.Phone == phone);
+
+            if(customer==null)
+            {
+                customer = new Customer
+                {
+                    Email = model.Email,
+                    Phone = phone,
+                    UserId = user.Id
+                };
+                _context.Customers.Add(customer);
+            }
+            else
+                customer.UserId = user.Id; 
+
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Login");
