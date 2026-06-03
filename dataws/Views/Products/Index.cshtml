@@ -25,6 +25,7 @@
                     <th>ID</th>
                     <th>Наименование</th>
                     <th>Цена</th>
+                    <th>Фото</th>
                     @if (!User.IsInRole("Admin"))
                     {
                         <th>Кол-во</th>
@@ -48,6 +49,13 @@
                         <td>@item.Id</td>
                         <td>@item.Name</td>
                         <td>@item.Price</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.ImageFileName))
+                            {
+                                <img src="~/uploads/products/@item.ImageFileName"
+                                    width="200" />
+                            }
+                        </td>                        
                         @if (!User.IsInRole("Admin"))
                         {
                             <td>

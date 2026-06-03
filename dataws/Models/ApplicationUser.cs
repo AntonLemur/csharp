@@ -4,6 +4,12 @@ using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+public enum KycStatus
+{
+    Pending,
+    Approved,
+    Rejected
+}
 
 //User = логин/пароль
 // Identity автоматически создаёт таблицы
@@ -19,6 +25,6 @@ public class ApplicationUser : IdentityUser
     public string FullName { get; set; }
 
     // KYC
-    public string KycStatus { get; set; } // Pending / Approved / Rejected
+    public KycStatus KycStatus { get; set; } // Pending / Approved / Rejected
     public string PassportFilePath { get; set; }
 }

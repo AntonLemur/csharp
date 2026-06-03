@@ -67,7 +67,7 @@ namespace DataApi.Models
                 entity.Property(e => e.FullName)
                     .HasColumnName("FULLNAME");
                 entity.Property(e => e.KycStatus)
-                    .HasColumnName("KYCSTATUS");
+                    .HasColumnName("KYCSTATUS").HasConversion<string>();
                 entity.Property(e => e.PassportFilePath)
                     .HasColumnName("PASSPORTFILEPATH");
             });
@@ -157,5 +157,6 @@ namespace DataApi.Models
         public DbSet<Product> Products { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Booking> Bookings { get; set;}
+        public DbSet<KycRequest> KycRequests { get; set;}
     }
 }

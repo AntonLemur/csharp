@@ -1,0 +1,67 @@
+@model IEnumerable<KycRequest>
+
+<h2>KYC заявки</h2>
+
+<div class="custom-table-wrapper">
+    <!-- Блок 1: Только шапка -->
+    <div class="table-header-only">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Пользователь</th>
+                    <th>Номер документа</th>
+                    <th>Файл</th>
+                    <th>Дата</th>
+                    <th>Статус</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <!-- Блок 2: Только данные с прокруткой -->
+    <div class="table-body-scroll">
+        <table class="table table-hover mb-0">
+            <tbody>
+                @foreach (var request in Model)
+                {
+                    <tr>
+                        <td>@request.Id</td>
+                        <td>@request.UserId</td>
+                        <td>@request.PassportNumber</td>
+                        <td>
+                            <a href="~/uploads/kyc/@request.DocumentFileName"
+                            target="_blank">
+                                Открыть
+                            </a>
+                        </td>
+                        <td>@request.CreatedAt</td>
+                        <td>@request.Status</td>
+                        <td>
+                            <form asp-action="Approve" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@request.Id" />
+                                <button type="submit"
+                                        class="btn btn-sm btn-success">
+                                    Одобрить
+                                </button>
+                            </form>
+                        </td>
+                        <td>
+                            <form asp-action="Reject" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@request.Id" />
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger">
+                                    Отклонить
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
 
 [Table("PRODUCTS")]
 public class Product
@@ -15,6 +16,11 @@ public class Product
     public decimal Price { get; set; }
     [Column("AVAILABLEQUANTITY")]
     public int AvailableQuantity { get; set; }
+    [Column("IMAGEFILENAME")]
+    public string ImageFileName { get; set; }
+
+    [NotMapped] //чтобы не цеплялось при миграции
+    public IFormFile Image { get; set; }
 
     public ICollection<Booking> Bookings { get; set; }
     public ICollection<OrderItem> OrderItems { get; set; }

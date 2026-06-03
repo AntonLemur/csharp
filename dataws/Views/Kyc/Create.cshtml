@@ -1,0 +1,21 @@
+@model KycRequestViewModel
+
+<form method="post"
+      enctype="multipart/form-data">
+
+    <div>
+        <label>Номер документа</label>
+        <input asp-for="PassportNumber" />
+    </div>
+
+    <div>
+        <label>Файл документа</label>
+        <input asp-for="Document"
+               type="file" />
+    </div>
+
+    <button type="submit">
+        Отправить
+    </button>
+
+</form>

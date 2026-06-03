@@ -33,4 +33,18 @@
             class="btn btn-primary">
         Сохранить
     </button>
+
+    <p>
+        Статус KYC:
+        <strong>@Model.User.KycStatus</strong>
+    </p>
+
+    @if(Model.User.KycStatus!=KycStatus.Approved)
+    {
+        <a asp-controller="Kyc"
+            asp-action="Create"
+            class="btn btn-success">
+                Отправить документы
+        </a>
+    }
 </form>

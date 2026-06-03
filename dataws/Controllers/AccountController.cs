@@ -50,7 +50,7 @@ public class AccountController : Controller
         {
             UserName = model.Email,
             Email = model.Email,
-            KycStatus = "Pending"
+            KycStatus = KycStatus.Pending
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);
