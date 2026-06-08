@@ -46,10 +46,10 @@ else
                                 @{
                                     var statusText = order.Status switch
                                     {
-                                        0 => "Новый",
-                                        1 => "В обработке",
-                                        2 => "Завершён",
-                                        3 => "Отменён",
+                                        OrderStatus.New => "Новый",
+                                        OrderStatus.Processing => "В обработке",
+                                        OrderStatus.Completed => "Завершён",
+                                        OrderStatus.Cancelled => "Отменён",
                                         _ => "Неизвестно"
                                     };
                                 }

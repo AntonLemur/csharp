@@ -4,6 +4,14 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataApi.Models;
+
+public enum OrderStatus
+{
+    New,
+    Processing,
+    Completed,
+    Cancelled
+}
     
 [Table("ORDERS")]
 public class Order
@@ -20,7 +28,7 @@ public class Order
     public float Amount { get; set; }
 
     [Column("STATUS")]
-    public short Status { get; set; }
+    public OrderStatus Status { get; set; }
 
     [Column("CUSTOMER_ID")] // Внешний ключ
     public long CustomerId { get; set; }

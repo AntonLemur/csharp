@@ -30,6 +30,12 @@
                     {
                         <th>Кол-во</th>
                     }
+                    else
+                    {
+                        <th>Остаток</th>                    
+                        <th></th>                    
+                        <th></th>                    
+                    }
                 </tr>
             </thead>
         </table>
@@ -53,9 +59,10 @@
                             @if (!string.IsNullOrEmpty(item.ImageFileName))
                             {
                                 <img src="~/uploads/products/@item.ImageFileName"
-                                    width="200" />
+                                    asp-append-version="true"  @* Чтобы не кэшировалось изображение *@
+                                    style="max-width:100%; height:auto;" />
                             }
-                        </td>                        
+                        </td>
                         @if (!User.IsInRole("Admin"))
                         {
                             <td>
@@ -77,14 +84,60 @@
                                         <input type="hidden" name="id" value="@item.Id" />
                                         <input type="hidden" name="plus" value="true" />
 
-                                        <button type="submit"
-                                                class="btn btn-sm btn-primary">
-                                            +
-                                        </button>
+                                        @if (item.AvailableQuantity > 0)
+                                        {
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-primary">
+                                                +
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-primary" disabled>
+                                                +
+                                            </button>
+                                        }                                        
                                     </form>
-
                                 </div>
                             </td>
+                        }
+                        else
+                        {
+                            <td>
+                                @if (item.AvailableQuantity > 0)
+                                {
+                                    <span class="text-success">
+                                        @item.AvailableQuantity
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger">
+                                        Нет в наличии
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Edit"
+                                    asp-route-id="@item.Id"
+                                    class="btn btn-success mb-3">
+                                        Изменить
+                                </a>
+                            </td>    
+                            <td>
+                                <form asp-action="Delete"
+                                    method="post">
+                                    <input type="hidden"
+                                        name="id"
+                                        value="@item.Id" />
+
+                                    <button type="submit"
+                                            class="btn btn-danger">
+                                        Удалить
+                                    </button>
+                                </form>
+                            </td>                                                
                         }
                     </tr>
                 }

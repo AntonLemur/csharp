@@ -102,58 +102,36 @@ public class OrdersController : Controller
             return View("Error");
         }
     }
+    
+    [Authorize(Roles = "Admin,Manager")]
+    [HttpPost]
+    public async Task<IActionResult> Cancel(long id)
+    {
+        var order = await _context.Orders
+            .Include(o => o.Items)
+            .FirstOrDefaultAsync(o => o.Id == id);
 
-    // это для Системы управления заказами
-    // [Authorize(Roles = "Admin")]
-    // [HttpGet]
-    // public async Task<IActionResult> Create()
-    // {
-    //     ViewBag.Products = new SelectList(
-    //         await _context.Products.ToListAsync(),
-    //         "Id",
-    //         "Name");
+        if (order == null)
+            return NotFound();
 
-    //     return View();
-    // }
+        if (order.Status == OrderStatus.Cancelled)
+            return RedirectToAction(nameof(Orders));
 
-    // [Authorize(Roles = "Admin")]
-    // [HttpPost]
-    // public async Task<IActionResult> Create(CreateOrderViewModel model)
-    // {
-    //     var user = await _userManager.GetUserAsync(User);
+        foreach (var item in order.Items)
+        {
+            var product = await _context.Products
+                .FirstOrDefaultAsync(p => p.Id == item.ProductId);
 
-    //     var customer = await _context.Customers
-    //         .FirstOrDefaultAsync(c => c.UserId == user.Id);
+            if (product != null)
+            {
+                product.AvailableQuantity += item.Quantity;
+            }
+        }
 
-    //     if (customer == null)
-    //         return Unauthorized();
+        order.Status = OrderStatus.Cancelled;
 
-    //     var product = await _context.Products
-    //         .FirstOrDefaultAsync(p => p.Id == model.ProductId);
+        await _context.SaveChangesAsync();
 
-    //     if (product == null)
-    //         return BadRequest();
-
-    //     var order = new Order
-    //     {
-    //         CustomerId = customer.Id,
-    //         OrderDate = DateTime.Now,
-    //         Status = 1,
-    //         Amount = (float)(product.Price * model.Quantity),
-    //         Items = new List<OrderItem>()
-    //     };
-
-    //     order.Items.Add(new OrderItem
-    //     {
-    //         ProductId = product.Id,
-    //         Quantity = model.Quantity,
-    //         Price = product.Price
-    //     });
-
-    //     _context.Orders.Add(order);
-
-    //     await _context.SaveChangesAsync();
-
-    //     return RedirectToAction("MyOrders");
-    // }
+        return RedirectToAction(nameof(Orders));
+    }
 }

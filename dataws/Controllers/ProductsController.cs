@@ -24,7 +24,8 @@ public class ProductsController : Controller
     [AllowAnonymous]
     public async Task<IActionResult> Index()
     {
-        var products = await _context.Products.ToListAsync();
+        var products = await _context.Products
+         .ToListAsync();
 
         return View(products);
     }
@@ -75,6 +76,92 @@ public class ProductsController : Controller
         return RedirectToAction("Index");
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var product = await _context.Products.FindAsync(id);
+
+        if (product == null)
+            return NotFound();
+
+        return View(product);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    public async Task<IActionResult> Edit(Product product)
+    {
+        var dbProduct = await _context.Products.FindAsync(product.Id);
+        // EF начинает отслеживать объект dbProduct, поэтому _context.Products.Update(dbProduct) не нужно 
+
+        if (dbProduct == null)
+            return NotFound();
+
+        dbProduct.Name = product.Name;
+        dbProduct.Price = product.Price;
+        dbProduct.AvailableQuantity = product.AvailableQuantity;
+        if (product.Image != null)
+        {
+            var fileName = dbProduct.ImageFileName;
+            fileName??=Guid.NewGuid() +
+                Path.GetExtension(product.Image.FileName);
+
+            string uploadsFolder =
+                Path.Combine(
+                    _environment.WebRootPath,
+                    "uploads",
+                    "products");
+
+            Directory.CreateDirectory(
+                uploadsFolder);
+
+            string filePath =
+                Path.Combine(
+                    uploadsFolder,
+                    fileName);
+
+            using var stream =
+                new FileStream(filePath, FileMode.Create);
+
+            await product.Image.CopyToAsync(stream);
+
+            dbProduct.ImageFileName = fileName;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var product = await _context.Products.FindAsync(id);
+
+        if (product == null)
+            return NotFound();
+
+        _context.Products.Remove(product);
+
+        await _context.SaveChangesAsync();
+
+        if (!string.IsNullOrEmpty(product.ImageFileName))
+        {
+            var filePath = Path.Combine(
+                _environment.WebRootPath,
+                "uploads",
+                "products",
+                product.ImageFileName);
+
+            if (System.IO.File.Exists(filePath))
+                System.IO.File.Delete(filePath);
+        }            
+
+        return RedirectToAction(nameof(Index));
+    }    
+
     [HttpPost]
     public async Task<IActionResult> ChangeQuantity(int id, bool plus)
     {
@@ -92,6 +179,9 @@ public class ProductsController : Controller
         {
             if (item == null)
             {
+                if (product.AvailableQuantity <= 0)
+                    return RedirectToAction(nameof(Index));
+
                 cart.Add(new CartItem
                 {
                     ProductId = product.Id,
@@ -102,6 +192,9 @@ public class ProductsController : Controller
             }
             else
             {
+                if (item.Quantity >= product.AvailableQuantity)
+                    return RedirectToAction(nameof(Index));
+
                 item.Quantity++;
             }
         }

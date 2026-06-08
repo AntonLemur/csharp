@@ -38,6 +38,25 @@ public class CartController : Controller
         if (!cart.Any())
             return RedirectToAction("Index");
 
+        //Проверка наличия товара
+        foreach (var item in cart)
+        {
+            var product = await _context.Products
+                .FirstOrDefaultAsync(p => p.Id == item.ProductId);
+
+            if (product == null)
+                return BadRequest("Товар не найден");
+
+            if (product.AvailableQuantity < item.Quantity)
+            {
+                ModelState.AddModelError(
+                    "",
+                    $"Недостаточно товара '{product.Name}' на складе");
+
+                return View("Index", cart);
+            }
+        }            
+
         var user = await _userManager.GetUserAsync(User);
 
         var customer = await _context.Customers
@@ -47,13 +66,19 @@ public class CartController : Controller
         {
             CustomerId = customer.Id,
             OrderDate = DateTime.Now,
-            Status = 0,
+            Status = OrderStatus.New,
             Amount = (float)cart.Sum(x => x.Price * x.Quantity),
             Items = new List<OrderItem>()
         };
 
         foreach (var item in cart)
         {
+            //Уменьшение остатка
+            var product = await _context.Products
+                .FirstOrDefaultAsync(p => p.Id == item.ProductId);
+
+            product.AvailableQuantity -= item.Quantity;
+
             order.Items.Add(new OrderItem
             {
                 ProductId = item.ProductId,

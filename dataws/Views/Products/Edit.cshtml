@@ -1,9 +1,10 @@
 @model Product
+<h2>Изменить товар</h2>
 
-<h2>Добавить товар</h2>
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
 
-<form asp-action="Create" method="post" enctype="multipart/form-data">
-
+    <input asp-for="Id" type="hidden" />
+    
     <div class="mb-3">
         <label>Название</label>
         <input asp-for="Name"
@@ -30,9 +31,18 @@
     </div>
     @* Предпросмотр *@
     <div>
-        <img id="preview"
-            style="max-width:300px; display:none;" />
-    </div>    
+        @if (!string.IsNullOrEmpty(Model.ImageFileName))
+        {
+            <img src="~/uploads/products/@Model.ImageFileName"
+                id="preview"
+                style="max-width:300px;" />
+        }
+        else
+        {
+            <img id="preview"
+                style="max-width:300px; display:none;" />
+        }    
+    </div>
 
     <div class="mb-3">
         <label>Количество на складе</label>
